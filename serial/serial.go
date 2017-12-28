@@ -10,6 +10,9 @@ import (
 
 var s *serial.Port
 
+// ChanUplink is channel of uplink data received from device
+var ChanUplink = make(chan []byte, 1)
+
 func init() {
 	c := &serial.Config{Name: "/dev/ttyUSB0", Baud: 57600}
 	tmp, err := serial.OpenPort(c)
@@ -51,31 +54,8 @@ func rcv() {
 		}
 		log.Printf("received data % x\n", buf[:n])
 
-		processStatusData(buf)
+		ChanUplink <- buf
 	}
-}
-
-// Status is status of light
-type Status struct {
-	InputPower          byte    `json:"inputPower"`
-	Dim                 byte    `json:"dim"`
-	OutputVoltage       byte    `json:"outputVoltage"`
-	OutputCurrent       float32 `json:"outputCurrent"`
-	InternalTemperature byte    `json:"internalTemperatue"`
-	Timestamp           string  `json:"timestamp"`
-}
-
-// ChanStatus is channel of status of lights struct
-var ChanStatus = make(chan *Status, 10)
-
-func processStatusData(data []byte) {
-	if len(data) < 10 || data[0] != 0X50 {
-		log.Println("invalid status packet")
-	}
-
-	status := new(Status)
-	status.InputPower = data[2]
-	ChanStatus <- status
 }
 
 func chkErr(err error) {
