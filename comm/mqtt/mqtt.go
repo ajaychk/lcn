@@ -14,7 +14,7 @@ const (
 	password      = "sc2havellssenra"
 
 	ulMsgChan = "/payloads/uplink/"
-	dlMsgChan = "/payloads/downlink/"
+	dlMsgChan = "/payloads/downlink"
 )
 
 var wg sync.WaitGroup
