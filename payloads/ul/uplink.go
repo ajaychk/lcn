@@ -1,8 +1,10 @@
 package ul
 
 import (
+	"encoding/json"
 	"log"
 
+	"github.com/lcn/comm/mqtt"
 	"github.com/lcn/serial"
 )
 
@@ -20,7 +22,12 @@ func processUL() {
 				log.Println(err)
 				continue
 			}
-			mqtt.Send(su)
+			bData, err := json.Marshal(su)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			mqtt.Send("status", bData)
 		}
 	}
 }
